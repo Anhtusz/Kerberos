@@ -1,0 +1,62 @@
+services:
+  dc:
+    image: nowsci/samba-domain:latest
+    container_name: krb-dc
+    hostname: dc01
+    privileged: true
+    restart: unless-stopped
+    environment:
+      DOMAIN: LAB.KERB
+      DOMAINPASS: "LabAdmin!2026"
+      HOSTIP: 172.28.0.10
+      DNSFORWARDER: 1.1.1.1
+    volumes:
+      - dc_data:/var/lib/samba
+      - dc_config:/etc/samba/external
+    networks:
+      labnet:
+        ipv4_address: 172.28.0.10
+
+  client:
+    build:
+      context: ./client
+    container_name: krb-client
+    hostname: client01
+    command: ["sleep", "infinity"]
+    dns:
+      - 172.28.0.10
+    dns_search:
+      - lab.kerb
+    networks:
+      labnet:
+        ipv4_address: 172.28.0.20
+    depends_on:
+      - dc
+
+  attacker:
+    build:
+      context: ./attacker
+    container_name: krb-attacker
+    hostname: attacker01
+    command: ["sleep", "infinity"]
+    dns:
+      - 172.28.0.10
+    dns_search:
+      - lab.kerb
+    networks:
+      labnet:
+        ipv4_address: 172.28.0.30
+    depends_on:
+      - dc
+
+volumes:
+  dc_data:
+  dc_config:
+
+networks:
+  labnet:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.28.0.0/24
+
